@@ -21,16 +21,23 @@ def categoryitem(category_id):
 @app.route('/category/<int:category_id>/new/', methods = ['GET', 'POST'])
 def newItem(category_id):
     if request.method == 'POST':
-        newitem = Item(request.form['name'], category_id = category_id)
+        newitem = Item(name = request.form['name'], item_id = category_id)
         session.add(newitem)
         session.commit()
         return redirect(url_for('categoryitem', category_id = category_id))
     else:
         return render_template('newitem.html', category_id = category_id)
 
-@app.route('/category/<int:category_id>/<int:item_id>/Edit')
+@app.route('/category/<int:category_id>/<int:item_id>/Edit', methods = ['GET', 'POST'])
 def editItem(category_id, item_id):
-    return "The selected item has been edited"
+    editeditem = session.query(Item).filter_by(id=item_id).one()
+    if request.method == 'POST':
+        editeditem.name = request.form['name']
+        session.add(editeditem)
+        session.commit()
+        return redirect(url_for('categoryitem', category_id = category_id))
+    else:
+        return render_template('edititem.html', category_id = category_id, item_id = item_id, item = editeditem)
 
 @app.route('/category/<int:category_id>/<int:item_id>/Delete')
 def deleteItem(category_id, item_id):
