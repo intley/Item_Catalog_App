@@ -22,5 +22,14 @@ class Item(Base):
     item_id = Column(Integer, ForeignKey('category.id'))
     category = relationship(Category)
 
+    @property
+    def serialize(self):
+        return {
+        'name': self.name,
+        'id': self.id,
+        'description': self.description,
+        'price': self.price
+        }
+
 engine = create_engine('sqlite:///categoryitem.db')
 Base.metadata.create_all(engine)

@@ -1,0 +1,12 @@
+<html>
+<body>
+
+  <h1>Category Menu</h1>
+
+  <!--<p><a href='{{url_for('newCategory')}}'>Create New Category</a></p>-->
+
+  {% for c in category %}
+  <p>{{c.name}}</p>
+  {% endfor %}
+</body>
+</html>
