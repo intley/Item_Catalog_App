@@ -2,14 +2,19 @@
 <body>
   <h1> New Item </h1>
 
-  <form action="{{url_for('newItem', category_id = category_id)}}"
+  <form action="{{url_for('newItem', category_name = category.name)}}"
   method = 'POST'>
 
   <p>Name: </p>
   <input type = 'text' size= '30' name = 'name'>
-  <input type = 'submit' value = 'Create'>
+  <p>Description: </p>
+  <input type = 'text' size = '30' name = "description">
+  <p>Price: </p>
+  <input type = 'text' size= '30' name = "price">
+
+  <p><input type = 'submit' value = 'Create'></p>
 
 </form>
-
+<a href="{{url_for('categoryitem', category_name = category.name)}}">Cancel</a>
 </body>
 </html>
