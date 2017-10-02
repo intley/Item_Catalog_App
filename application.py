@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, url_for, redirect, flash, jso
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Category, Item
+from database_setup import Base, User, Category, Item
 
 from flask import session as login_session
 import random, string
@@ -20,9 +20,8 @@ CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "Catalog Application"
 
-engine = create_engine('sqlite:///categoryitem.db')
+engine = create_engine('sqlite:///categoryitemwithusers.db')
 Base.metadata.bind = engine
-
 
 DBSession = sessionmaker(bind = engine)
 session = DBSession()
@@ -118,6 +117,16 @@ def gconnect():
     return output
 
 #Write User Functions here
+def createUser():
+
+
+
+def getUserInfo():
+
+
+def getUserID():
+
+
 
 @app.route('/gdisconnect')
 def gdisconnect():
@@ -171,16 +180,25 @@ def categories():
     categories = session.query(Category).all()
     return render_template('category.html', categories = categories)
 
-#@app.route('/category/new', methods = ['GET', 'POST'])
-#def newCategory():
-#    if request.method == 'POST':
-#        newcat = Category(name = request.form['name'])
-#        session.add(newcat)
-#        session.commit()
-#        flash("New Category has been created!")
-#        return redirect(url_for('categories'))
-#    else:
-#        return render_template('newcategory.html')
+@app.route('/category/new', methods = ['GET', 'POST'])
+def newCategory():
+    if request.method == 'POST':
+        newcat = Category(name = request.form['name'])
+        session.add(newcat)
+        session.commit()
+        flash("New Category has been created!")
+        return redirect(url_for('categories'))
+    else:
+        return render_template('newcategory.html')
+
+@app.route('/category/<string:category_name>/edit', methods = ['GET', 'POST'])
+def editCategory():
+    if request.method == 'POST':
+        editcat
+
+@app.route('/category/<string:category_name>/delete', methods = ['GET', 'POST'])
+def deleteCategory():
+
 
 @app.route('/category/<string:category_name>/')
 def categoryitem(category_name):
