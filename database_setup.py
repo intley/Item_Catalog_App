@@ -28,8 +28,6 @@ class Category(Base):
 
     id = Column(Integer, primary_key = True)
     name = Column(String(200), nullable = False)
-    user_id = Column(Integer, ForeignKey('user.id'))
-    user = relationship(User)
 
     @property
     def serialize(self):
@@ -59,5 +57,5 @@ class Item(Base):
         'price': self.price
         }
 
-engine = create_engine('sqlite:///categoryitemwithusers.db')
+engine = create_engine('sqlite:///categoryitemwithuser.db')
 Base.metadata.create_all(engine)

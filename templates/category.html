@@ -19,7 +19,7 @@
   </ul>
   {% endif %}
   {% endwith %}
-  
+
   <div class="container">
   <header>
       <div class="container">
@@ -38,7 +38,7 @@
   <main>
   <h3>Categories:</h3>
   {% for c in categories %}
-  <a href="{{url_for('categoryitem', category_name = c.name)}}"><p>{{c.name}}</p></a>
+  <a href="{{url_for('useritems', category_name = c.name)}}"><p>{{c.name}}</p></a>
   {% endfor %}
 
   <h3>Latest Items: </h3>

@@ -20,7 +20,7 @@ CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "Catalog Application"
 
-engine = create_engine('sqlite:///categoryitemwithusers.db')
+engine = create_engine('sqlite:///categoryitemwithuser.db')
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind = engine)
@@ -100,10 +100,10 @@ def gconnect():
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
 
-    #user_id = getUserID(login_session['email'])
-    #if not user_id:
-    #    user_id = createUser(login_session)
-    #login_session['user_id'] = user_id
+    user_id = getUserid(login_session['email'])
+    if not user_id:
+        user_id = createUser(login_session)
+        login_session['user_id'] = user_id
 
     output = ''
     output += '<h1>Welcome, '
@@ -114,18 +114,34 @@ def gconnect():
     output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
     flash("you are now logged in as %s" % login_session['username'])
     print "done!"
+    print login_session['picture']
     return output
 
-#Write User Functions here
-def createUser():
+
+def createUser(login_session):
+    newUser = User(name=login_session['username'], email=login_session[
+                   'email'], picture=login_session['picture'])
+    session.add(newUser)
+    session.commit()
+    user = session.query(User).filter_by(email=login_session['email']).one()
+    return user.id
 
 
+def getUserInfo(user_id):
+    user = session.query(User).filter_by(id=user_id).one()
+    return user
 
-def getUserInfo():
 
+def getUserid(email):
+    try:
+        user = session.query(User).filter_by(email=email).one()
+        return user.id
+    except:
+        return None
 
-def getUserID():
-
+@app.route('/detail')
+def printlogindetails(login_session):
+    render_template('details.html', session = login_session)
 
 
 @app.route('/gdisconnect')
@@ -161,50 +177,27 @@ def gdisconnect():
         return response
 
 
-@app.route('/category/<string:category_name>/JSON')
-def categoryitemJSON(category_id):
-    category = session.query(Category).filter_by(name = category_name).one()
-    items = session.query(Item).filter_by(item_id = category_id).all()
-    return jsonify(categoryitems=[i.serialize for i in items])
-
-#Need to fix, taking default category as 1
-@app.route('/category/<string:category_name>/<int:item_id>/JSON')
-def itemJSON(category_name, item_id):
-    category = session.query(Category).filter_by(name = category_name)
-    item = session.query(Item).filter_by(id=item_id).one()
-    return jsonify(item.serialize)
-
 @app.route('/')
 @app.route('/categories/')
 def categories():
     categories = session.query(Category).all()
     return render_template('category.html', categories = categories)
 
-@app.route('/category/new', methods = ['GET', 'POST'])
-def newCategory():
-    if request.method == 'POST':
-        newcat = Category(name = request.form['name'])
-        session.add(newcat)
-        session.commit()
-        flash("New Category has been created!")
-        return redirect(url_for('categories'))
-    else:
-        return render_template('newcategory.html')
-
-@app.route('/category/<string:category_name>/edit', methods = ['GET', 'POST'])
-def editCategory():
-    if request.method == 'POST':
-        editcat
-
-@app.route('/category/<string:category_name>/delete', methods = ['GET', 'POST'])
-def deleteCategory():
-
 
 @app.route('/category/<string:category_name>/')
-def categoryitem(category_name):
+def useritems(category_name):
     category = session.query(Category).filter_by(name = category_name).one()
-    items = session.query(Item).filter_by(item_id = category.id)
-    return render_template('item.html', category = category, items = items)
+    item = session.query(Item).filter_by(item_id = category.id)
+    creator = getUserInfo(item.user_id)
+    return render_template('public.html')
+
+"""
+    creator = getUserInfo(user_id = items.user_id)
+    if 'username' not in login_session or creator.id != login_session['user_id']:
+        return render_template('public.html')
+    else:
+        user = getUserInfo(login_session['user_id'])
+        return render_template('item.html', category_name = category.name, item_id = item.id, user_id = user.id)
 
 @app.route('/category/<string:category_name>/New/', methods = ['GET', 'POST'])
 def newItem(category_name):
@@ -250,6 +243,19 @@ def deleteItem(category_name, item_id):
     else:
         return render_template('deleteitem.html', category_name = category_name, item_id = item_id, item = itemtodelete)
 
+@app.route('/category/<string:category_name>/JSON')
+def categoryitemJSON(category_id):
+    category = session.query(Category).filter_by(name = category_name).one()
+    items = session.query(Item).filter_by(item_id = category_id).all()
+    return jsonify(categoryitems=[i.serialize for i in items])
+
+#Need to fix, taking default category as 1
+@app.route('/category/<string:category_name>/<int:item_id>/JSON')
+def itemJSON(category_name, item_id):
+    category = session.query(Category).filter_by(name = category_name)
+    item = session.query(Item).filter_by(id=item_id).one()
+    return jsonify(item.serialize)
+"""
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'

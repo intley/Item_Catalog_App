@@ -1,0 +1,18 @@
+#@app.route('/category/new', methods = ['GET', 'POST'])
+#def newCategory():
+#    if request.method == 'POST':
+#        newcat = Category(name = request.form['name'])
+#        session.add(newcat)
+#        session.commit()
+#        flash("New Category has been created!")
+#        return redirect(url_for('categories'))
+#    else:
+#        return render_template('newcategory.html')
+
+#@app.route('/category/<string:category_name>/edit', methods = ['GET', 'POST'])
+#def editCategory():
+#    if request.method == 'POST':
+#        editcat
+
+#@app.route('/category/<string:category_name>/delete', methods = ['GET', 'POST'])
+#def deleteCategory():
