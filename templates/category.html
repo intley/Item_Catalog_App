@@ -36,9 +36,13 @@
   </header>
 
   <main>
-  <h3>Categories:</h3>
+  <a href="{{url_for('newCategory')}}"><h4>Add New Category</h4></a>
+  <h2>Categories:</h2>
   {% for c in categories %}
-  <a href="{{url_for('useritems', category_name = c.name)}}"><p>{{c.name}}</p></a>
+  <a href="{{url_for('useritems', category_name = c.name)}}"><h4>{{c.name}}</h4></a>
+  <a href="{{url_for('editCategory', category_name = c.name)}}"><h6>Edit Category</h6></a>
+  <a href="{{url_for('deleteCategory', category_name = c.name)}}"><h6>Delete Category</h6></a>
+<br>
   {% endfor %}
 
   <h3>Latest Items: </h3>

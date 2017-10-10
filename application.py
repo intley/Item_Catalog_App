@@ -20,7 +20,7 @@ CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "Catalog Application"
 
-engine = create_engine('sqlite:///categoryitemwithuser.db')
+engine = create_engine('sqlite:///categoryitems.db')
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind = engine)
@@ -100,7 +100,7 @@ def gconnect():
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
 
-    user_id = getUserid(login_session['email'])
+    user_id = getUserId(login_session['email'])
     if not user_id:
         user_id = createUser(login_session)
         login_session['user_id'] = user_id
@@ -183,15 +183,54 @@ def categories():
     categories = session.query(Category).all()
     return render_template('category.html', categories = categories)
 
+@app.route('/category/new', methods = ['GET', 'POST'])
+def newCategory():
+    if request.method == 'POST':
+        newcat = Category(name = request.form['name'])
+        session.add(newcat)
+        session.commit()
+        flash("New Category has been created!")
+        return redirect(url_for('categories'))
+    else:
+        return render_template('newcategory.html')
 
-@app.route('/category/<string:category_name>/')
+@app.route('/category/<string:category_name>/Edit', methods = ['GET', 'POST'])
+def editCategory(category_name):
+    editcat = session.query(Category).filter_by(name = category_name).one()
+    if request.method == 'POST':
+        editcat.name = request.form['name']
+        session.add(editcat)
+        session.commit()
+        flash("Category has been edited!")
+        return redirect(url_for('categories'))
+    else:
+        return render_template('editcategory.html', category = editcat)
+
+@app.route('/category/<string:category_name>/Delete', methods = ['GET', 'POST'])
+def deleteCategory(category_name):
+    delcat = session.query(Category).filter_by(name = category_name).one()
+    if request.method == 'POST':
+        session.delete(delcat)
+        session.commit()
+        flash("The selected category has been deleted!")
+        return redirect(url_for('categories'))
+    else:
+        return render_template('deletecategory.html', category = delcat)
+
+
+
+@app.route('/category/<string:category_name>/', methods = ['GET', 'POST'])
 def useritems(category_name):
     category = session.query(Category).filter_by(name = category_name).one()
-    item = session.query(Item).filter_by(item_id = category.id, user_id = login_session['user_id']).one()
+    log_id = getUserId(login_session['email'])
+    item = session.query(Item).filter_by(item_id = category.id, user_id = log_id).all()
     if 'username' not in login_session:
-        return render_template('public.html', category = category, items = item)
+        return render_template('public.html')
+    else:
+        return render_template('item.html', category = category, items = item)
 
 """
+
     creator = getUserInfo(user_id = items.user_id)
     if 'username' not in login_session or creator.id != login_session['user_id']:
         return render_template('public.html')

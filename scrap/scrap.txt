@@ -16,3 +16,13 @@
 
 #@app.route('/category/<string:category_name>/delete', methods = ['GET', 'POST'])
 #def deleteCategory():
+
+
+<!--
+<p><a href='{{url_for('editItem', category_name = category.name, item_id = i.id)}}'>Edit</a></p>
+<p><a href='{{url_for('deleteItem', category_name = category.name, item_id = i.id}}'>Delete</a></p>
+-->
+
+<!--
+<p><a href='{{url_for('newItem', category_name = category.name)}}'>Create New Item</a></p>
+-->

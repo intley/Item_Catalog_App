@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 
 from database_setup import Base, User, Category, Item
 
-engine = create_engine('sqlite:///categoryitemwithuser.db')
+engine = create_engine('sqlite:///categoryitems.db')
 # Bind the engine to the metadata of the Base class so that the
 # declaratives can be accessed through a DBSession instance
 Base.metadata.bind = engine
@@ -18,7 +18,7 @@ session.add(user1)
 session.commit()
 
 # Categories Books and Items
-category1 = Category(name = "Books")
+category1 = Category(name = "Books", user = user1)
 
 session.add(category1)
 session.commit()
@@ -39,51 +39,51 @@ session.add(item3)
 session.commit()
 
 # Category Movies and Items
-category2 = Category(name = "Movies")
+category2 = Category(name = "Movies", user = user1)
 
 session.add(category2)
 session.commit()
 
-category3 = Category(name = "Mobile Phones")
+category3 = Category(name = "Mobile Phones", user = user1)
 
 session.add(category3)
 session.commit()
 
-category4 = Category(name = "Laptops")
+#category4 = Category(name = "Laptops")
 
-session.add(category4)
-session.commit()
+#session.add(category4)
+#session.commit()
 
-category5 = Category(name = "Video Games")
+#category5 = Category(name = "Video Games")
 
-session.add(category5)
-session.commit()
+#session.add(category5)
+#session.commit()
 
-category6 = Category(name = "Consoles")
+#category6 = Category(name = "Consoles", user = user1)
 
-session.add(category6)
-session.commit()
+#session.add(category6)
+#session.commit()
 
-category7 = Category(name = "Sports")
+#category7 = Category(name = "Sports")
 
-session.add(category7)
-session.commit()
+#session.add(category7)
+#session.commit()
 
-category8 = Category(name = "Music")
+#category8 = Category(name = "Music")
 
-session.add(category8)
-session.commit()
+#session.add(category8)
+#session.commit()
 
-category9 = Category(name = "Television Sets")
+#category9 = Category(name = "Television Sets")
 
-session.add(category9)
-session.commit()
+#session.add(category9)
+#session.commit()
 
-category10 = Category(name = "Desktops")
+#category10 = Category(name = "Desktops")
 
-session.add(category10)
-session.commit()
+#session.add(category10)
+#session.commit()
 
 # Items for each category
 
-print "Added Lots of Category Items!"
+print "Added Category Items!"
