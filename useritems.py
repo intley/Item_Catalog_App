@@ -11,7 +11,7 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-# Creating the hard coded user
+# Creating the administrator
 user1 = User(name = "Rahul Rajendran", email = "intley@gmail.com", picture = "https://lh6.googleusercontent.com/-msPj9gj5aD8/AAAAAAAAAAI/AAAAAAAABlk/f02nmbpb4BM/photo.jpg")
 
 session.add(user1)

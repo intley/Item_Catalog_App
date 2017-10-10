@@ -132,16 +132,16 @@ def getUserInfo(user_id):
     return user
 
 
-def getUserid(email):
+def getUserId(email):
     try:
         user = session.query(User).filter_by(email=email).one()
         return user.id
     except:
         return None
 
-@app.route('/detail')
-def printlogindetails(login_session):
-    render_template('details.html', session = login_session)
+#@app.route('/detail')
+#def printlogindetails(login_session):
+#    render_template('details.html', session = login_session)
 
 
 @app.route('/gdisconnect')
@@ -187,9 +187,9 @@ def categories():
 @app.route('/category/<string:category_name>/')
 def useritems(category_name):
     category = session.query(Category).filter_by(name = category_name).one()
-    item = session.query(Item).filter_by(item_id = category.id)
-    creator = getUserInfo(item.user_id)
-    return render_template('public.html')
+    item = session.query(Item).filter_by(item_id = category.id, user_id = login_session['user_id']).one()
+    if 'username' not in login_session:
+        return render_template('public.html', category = category, items = item)
 
 """
     creator = getUserInfo(user_id = items.user_id)

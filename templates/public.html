@@ -2,8 +2,17 @@
 <head>
   <body>
 
-    <p> There are currently no public items. </p>
-    <p> Login as a user to create items. </p>
+    <p><a href="{{url_for('categories')}}">Back</a></p>
+
+    <h1>{{ category.name }}</h1>
+
+    {% for i in items %}
+
+      <p>{{ i.name }}</p>
+      <p>{{ i.description }}</p>
+      <p>{{ i.price }}</p>
+
+    {% endfor %}
 
   </body>
 </html>
