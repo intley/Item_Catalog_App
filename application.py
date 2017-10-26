@@ -1,11 +1,13 @@
 from flask import Flask, render_template, request, url_for, redirect, flash, jsonify
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, User, Category, Item
 
 from flask import session as login_session
 import random, string
+import datetime
+import DateTime
 
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
@@ -20,7 +22,7 @@ CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "Catalog Application"
 
-engine = create_engine('sqlite:///categoryitems.db')
+engine = create_engine('sqlite:///itemcatalog.db')
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind = engine)
@@ -139,10 +141,6 @@ def getUserId(email):
     except:
         return None
 
-#@app.route('/detail')
-#def printlogindetails(login_session):
-#    render_template('details.html', session = login_session)
-
 
 @app.route('/gdisconnect')
 def gdisconnect():
@@ -179,64 +177,34 @@ def gdisconnect():
 
 @app.route('/')
 @app.route('/categories/')
+"""
 def categories():
     categories = session.query(Category).all()
-    return render_template('category.html', categories = categories)
-
-@app.route('/category/new', methods = ['GET', 'POST'])
-def newCategory():
-    if request.method == 'POST':
-        newcat = Category(name = request.form['name'])
-        session.add(newcat)
-        session.commit()
-        flash("New Category has been created!")
-        return redirect(url_for('categories'))
+    admin_email = "rahul.intley@gmail.com"
+    admin_id = getUserId(admin_email)
+    a_items = session.query(Item).filter_by(user_id = admin_id).all()
+    if 'username not in login_session':
+        return render_template('pub_category.html', categories = categories, user_id = admin_id).all()
     else:
-        return render_template('newcategory.html')
-
-@app.route('/category/<string:category_name>/Edit', methods = ['GET', 'POST'])
-def editCategory(category_name):
-    editcat = session.query(Category).filter_by(name = category_name).one()
-    if request.method == 'POST':
-        editcat.name = request.form['name']
-        session.add(editcat)
-        session.commit()
-        flash("Category has been edited!")
-        return redirect(url_for('categories'))
-    else:
-        return render_template('editcategory.html', category = editcat)
-
-@app.route('/category/<string:category_name>/Delete', methods = ['GET', 'POST'])
-def deleteCategory(category_name):
-    delcat = session.query(Category).filter_by(name = category_name).one()
-    if request.method == 'POST':
-        session.delete(delcat)
-        session.commit()
-        flash("The selected category has been deleted!")
-        return redirect(url_for('categories'))
-    else:
-        return render_template('deletecategory.html', category = delcat)
-
+        log_id = getUserId(login_session['email'])
+        u_items = session.query(Item).filter_by(user_id = log_id)
+        return render_template('user_category.html', categories = categories, items = u_items).all()
+"""
 
 
 @app.route('/category/<string:category_name>/', methods = ['GET', 'POST'])
 def useritems(category_name):
     category = session.query(Category).filter_by(name = category_name).one()
-    log_id = getUserId(login_session['email'])
-    item = session.query(Item).filter_by(item_id = category.id, user_id = log_id).all()
+    admin_email = "rahul.intley@gmail.com"
+    admin_id = getUserId(admin_email)
+    print(admin_id)
+    a_items = session.query(Item).filter_by(item_id = category.id, user_id = admin_id).all()
     if 'username' not in login_session:
-        return render_template('public.html')
+        return render_template('public.html', category = category, items = a_items)
     else:
+        log_id = getUserId(login_session['email'])
+        item = session.query(Item).filter_by(item_id = category.id, user_id = log_id).all()
         return render_template('item.html', category = category, items = item)
-
-"""
-
-    creator = getUserInfo(user_id = items.user_id)
-    if 'username' not in login_session or creator.id != login_session['user_id']:
-        return render_template('public.html')
-    else:
-        user = getUserInfo(login_session['user_id'])
-        return render_template('item.html', category_name = category.name, item_id = item.id, user_id = user.id)
 
 @app.route('/category/<string:category_name>/New/', methods = ['GET', 'POST'])
 def newItem(category_name):
@@ -244,11 +212,17 @@ def newItem(category_name):
         return redirect('/login')
     category = session.query(Category).filter_by(name = category_name).one()
     if request.method == 'POST':
-        newitem = Item(name = request.form['name'], description = request.form['description'], price = request.form['price'], item_id = category.id)
+        user_id = getUserId(login_session['email'])
+        newitem = Item(name = request.form['name'],
+                       description = request.form['description'],
+                       price = request.form['price'],
+                       item_id = category.id,
+                       date=datetime.datetime.now(),
+                       user_id = user_id)
         session.add(newitem)
         session.commit()
         flash("New Item has been created!")
-        return redirect(url_for('categoryitem', category_name = category.name))
+        return redirect(url_for('useritems', category_name = category.name))
     else:
         return render_template('newitem.html', category = category)
 
@@ -257,15 +231,17 @@ def editItem(category_name, item_id):
     if 'username' not in login_session:
         return redirect('/login')
     category = session.query(Category).filter_by(name = category_name).one()
-    editeditem = session.query(Item).filter_by(id=item_id).one()
+    user_id = getUserId(login_session['email'])
+    editeditem = session.query(Item).filter_by(id=item_id, user_id = user_id).one()
     if request.method == 'POST':
         editeditem.name = request.form['name']
         editeditem.description = request.form['description']
         editeditem.price = request.form['price']
+        editeditem.date = datetime.datetime.now()
         session.add(editeditem)
         session.commit()
         flash("Item has been edited!")
-        return redirect(url_for('categoryitem', category_name = category.name))
+        return redirect(url_for('useritems', category_name = category.name))
     else:
         return render_template('edititem.html', category = category, item_id = item_id, item = editeditem)
 
@@ -273,12 +249,13 @@ def editItem(category_name, item_id):
 def deleteItem(category_name, item_id):
     if 'username' not in login_session:
         return redirect('/login')
-    itemtodelete = session.query(Item).filter_by(id=item_id).one()
+    user_id = getUserId(login_session['email'])
+    itemtodelete = session.query(Item).filter_by(id=item_id, user_id = user_id).one()
     if request.method == 'POST':
         session.delete(itemtodelete)
         session.commit()
         flash("Item has been deleted!")
-        return redirect(url_for('categoryitem', category_name = category_name))
+        return redirect(url_for('useritems', category_name = category_name))
     else:
         return render_template('deleteitem.html', category_name = category_name, item_id = item_id, item = itemtodelete)
 
@@ -294,7 +271,6 @@ def itemJSON(category_name, item_id):
     category = session.query(Category).filter_by(name = category_name)
     item = session.query(Item).filter_by(id=item_id).one()
     return jsonify(item.serialize)
-"""
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'

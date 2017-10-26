@@ -26,3 +26,38 @@
 <!--
 <p><a href='{{url_for('newItem', category_name = category.name)}}'>Create New Item</a></p>
 -->
+
+
+#@app.route('/category/new', methods = ['GET', 'POST'])
+#def newCategory():
+#    if request.method == 'POST':
+#        newcat = Category(name = request.form['name'])
+#        session.add(newcat)
+#        session.commit()
+#        flash("New Category has been created!")
+#        return redirect(url_for('categories'))
+#    else:
+#        return render_template('newcategory.html')
+
+#@app.route('/category/<string:category_name>/Edit', methods = ['GET', 'POST'])
+#def editCategory(category_name):
+#    editcat = session.query(Category).filter_by(name = category_name).one()
+#    if request.method == 'POST':
+#        editcat.name = request.form['name']
+#        session.add(editcat)
+#        session.commit()
+#        flash("Category has been edited!")
+#        return redirect(url_for('categories'))
+#    else:
+#        return render_template('editcategory.html', category = editcat)
+
+#@app.route('/category/<string:category_name>/Delete', methods = ['GET', 'POST'])
+#def deleteCategory(category_name):
+#    delcat = session.query(Category).filter_by(name = category_name).one()
+#    if request.method == 'POST':
+#        session.delete(delcat)
+#        session.commit()
+#        flash("The selected category has been deleted!")
+#        return redirect(url_for('categories'))
+#    else:
+#        return render_template('deletecategory.html', category = delcat)

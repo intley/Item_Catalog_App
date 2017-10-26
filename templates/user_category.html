@@ -26,9 +26,6 @@
           <h1 class="text-center">Category App</h1>
           <div class="row">
             <div class="col-md-6">
-          <a href="{{url_for('showLogin')}}"><h4>Login</h4></a>
-          </div>
-            <div class="col-md-6">
           <a href="{{url_for('gdisconnect')}}"><h4>Disconnect</h4></a>
           </div>
           </div>
@@ -36,16 +33,17 @@
   </header>
 
   <main>
-  <a href="{{url_for('newCategory')}}"><h4>Add New Category</h4></a>
   <h2>Categories:</h2>
   {% for c in categories %}
   <a href="{{url_for('useritems', category_name = c.name)}}"><h4>{{c.name}}</h4></a>
-  <a href="{{url_for('editCategory', category_name = c.name)}}"><h6>Edit Category</h6></a>
-  <a href="{{url_for('deleteCategory', category_name = c.name)}}"><h6>Delete Category</h6></a>
 <br>
   {% endfor %}
 
   <h3>Latest Items: </h3>
+  {% for i in items %}
+    <p>{{i.name}}</p>
+    <br>
+  {% endfor %}
   </main>
 </div>
 </body>
