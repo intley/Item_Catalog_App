@@ -1,13 +1,13 @@
+# Import modules
 from flask import Flask, render_template, request, url_for, redirect, flash, jsonify
 
-from sqlalchemy import create_engine, desc
+from sqlalchemy import create_engine, desc, DateTime
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, User, Category, Item
 
 from flask import session as login_session
 import random, string
 import datetime
-import DateTime
 
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
@@ -177,19 +177,17 @@ def gdisconnect():
 
 @app.route('/')
 @app.route('/categories/')
-"""
 def categories():
     categories = session.query(Category).all()
-    admin_email = "rahul.intley@gmail.com"
-    admin_id = getUserId(admin_email)
-    a_items = session.query(Item).filter_by(user_id = admin_id).all()
     if 'username not in login_session':
-        return render_template('pub_category.html', categories = categories, user_id = admin_id).all()
+        admin_email = "rahul.intley@gmail.com"
+        admin_id = getUserId(admin_email)
+        a_items = session.query(Item).filter_by(user_id = admin_id).all()
+        return render_template('pub_category.html', categories = categories, user_id = admin_id, items = a_items)
     else:
         log_id = getUserId(login_session['email'])
         u_items = session.query(Item).filter_by(user_id = log_id)
-        return render_template('user_category.html', categories = categories, items = u_items).all()
-"""
+        return render_template('user_category.html', categories = categories, items = u_items)
 
 
 @app.route('/category/<string:category_name>/', methods = ['GET', 'POST'])

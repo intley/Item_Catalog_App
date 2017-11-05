@@ -18,10 +18,10 @@ session.query(User).delete()
 
 # Creating the administrator
 user2 = User(name = "Rahul Rajendran",
-             email = "intley@gmail.com",
-             picture = "https://lh6.googleusercontent.com/-msPj9gj5aD8/AAAAAAAAAAI/AAAAAAAABlk/f02nmbpb4BM/photo.jpg")
+             email = "rahul.intley@gmail.com",
+             picture = "https://lh4.googleusercontent.com/-5JjX9_cp3Ms/AAAAAAAAAAI/AAAAAAAAAAo/3x_zSD7DSpM/photo.jpg")
 
-session.add(user1)
+session.add(user2)
 session.commit()
 
 # Categories Books and Items
@@ -70,7 +70,7 @@ item1 = Item(name = "Da Vinci Code",
              description = "2003 mystery-detective novel by Dan Brown.",
              price = "10$",
              category = category1,
-             user = user1)
+             user = user2)
 
 session.add(item1)
 session.commit()
@@ -80,7 +80,7 @@ item2 = Item(name = "Harry Potter and the Sorcerer's Stone",
              description = "1997 Fantasy novel by JK Rowling",
              price = "15$",
              category = category1,
-             user = user1)
+             user = user2)
 
 session.add(item2)
 session.commit()
@@ -90,7 +90,7 @@ item3 = Item(name = "Harry Potter and the Chamber of Secrets",
              description = "1998 Fantasy novel by JK Rowling ",
              price = "15$",
              category = category1,
-             user = user1)
+             user = user2)
 
 session.add(item3)
 session.commit()
