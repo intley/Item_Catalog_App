@@ -1,18 +1,44 @@
 <html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>{{category.name}} Items | Catalog</title>
+  <!--Bootstrap CSS File -->
+  <link type="text/css" href="/static/css/bootstrap.min.css" rel="stylesheet">
+  <!--Stylesheet CSS File -->
+  <link type="text/css" href="/static/css/styles.css" rel = "stylesheet">
+</head>
 <body>
-
-  <form action = "{{url_for('editItem', category_name = category.name, item_id = item_id)}}"
-  method = 'POST'>
-
-  <p>Name: </p>
-  <input type= "text" size="30" name= "name" placeholder="{{item.name}}">
-  <p>Description: </p>
-  <input type = 'text' size = '30' name = "description" placeholder="{{item.description}}">
-  <p>Price: </p>
-  <input type = 'text' size= '30' name = "price" placeholder="{{item.price}}">
-
-  <p><input type="submit" value="Edit"></p>
-</form>
-<a href="{{url_for('useritems', category_name = category.name)}}">Cancel</a>
+<header>
+  <nav class="navbar bg-light">
+    <div class="container">
+      <a class="navbar-brand text-dark">Category App</a>
+      <a href="{{url_for('gdisconnect')}}" class="text-right text-dark">Logout</a>
+    </div>
+  </nav>
+  <div class="container">
+  <h1>Are you sure you want to Edit {{item.name}}?</h1>
+  </div>
+</header>
+<main>
+  <div class="container">
+    <form action="{{url_for('editItem', category_name = category.name, item_id = item_id)}}" method = 'POST'>
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" class="form-control" placeholder="{{item.name}}" name ='name'>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <input type="text" class="form-control" placeholder="{{item.description}}" name ='description'>
+      </div>
+      <div class="form-group">
+        <label>Price</label>
+        <input type="text" class="form-control" placeholder="{{item.price}}" name='price'>
+      </div>
+      <button type="submit" class="btn btn-primary">Edit</button>
+      <a href="{{url_for('useritems', category_name = category.name)}}"><button type="button" class="btn btn-warning">Cancel</button></a>
+    </form>
+</div>
+</main>
 </body>
 </html>

@@ -1,0 +1,48 @@
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Public Item | Catalog</title>
+  <!--Bootstrap CSS File -->
+  <link type="text/css" href="/static/css/bootstrap.min.css" rel="stylesheet">
+  <!--Stylesheet CSS File -->
+  <link type="text/css" href="/static/css/styles.css" rel = "stylesheet">
+</head>
+<body>
+  <header>
+    <nav class="navbar bg-light">
+      <div class="container">
+        <a class="navbar-brand text-dark">Category App</a>
+        <a href="{{url_for('showLogin')}}" class="text-right text-dark">Login</a>
+      </div>
+    </nav>
+    <div class="container">
+      <a href="{{url_for('categories')}}"><button type="button" class="btn btn-primary">Back</button></a>
+    </div>
+  </header>
+  <section>
+    <div class="container">
+      <h1>{{ category.name }}</h1>
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+      <ul>
+        {% for message in messages %}
+        <li><strong>{{message}}</strong></li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+      {% endwith %}
+    </div>
+  </section>
+  <main>
+    <div class="container">
+      {% for i in items %}
+      <p>Item Name: {{ i.name }}</p>
+      <p>Description: {{ i.description }}</p>
+      <p>Price: {{ i.price }}</p>
+      <br>
+      {% endfor %}
+    </div>
+  </main>
+</body>
+</html>

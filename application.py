@@ -179,7 +179,7 @@ def gdisconnect():
 @app.route('/categories/')
 def categories():
     categories = session.query(Category).all()
-    if 'username not in login_session':
+    if 'username' not in login_session:
         admin_email = "rahul.intley@gmail.com"
         admin_id = getUserId(admin_email)
         a_items = session.query(Item).filter_by(user_id = admin_id).all()
@@ -190,7 +190,7 @@ def categories():
         return render_template('user_category.html', categories = categories, items = u_items)
 
 
-@app.route('/category/<string:category_name>/', methods = ['GET', 'POST'])
+@app.route('/categories/<string:category_name>/', methods = ['GET', 'POST'])
 def useritems(category_name):
     category = session.query(Category).filter_by(name = category_name).one()
     admin_email = "rahul.intley@gmail.com"
@@ -198,13 +198,14 @@ def useritems(category_name):
     print(admin_id)
     a_items = session.query(Item).filter_by(item_id = category.id, user_id = admin_id).all()
     if 'username' not in login_session:
-        return render_template('public.html', category = category, items = a_items)
+        return render_template('public_items.html', category = category, items = a_items)
     else:
         log_id = getUserId(login_session['email'])
         item = session.query(Item).filter_by(item_id = category.id, user_id = log_id).all()
-        return render_template('item.html', category = category, items = item)
+        return render_template('user_item.html', category = category, items = item)
 
-@app.route('/category/<string:category_name>/New/', methods = ['GET', 'POST'])
+
+@app.route('/categories/<string:category_name>/New/', methods = ['GET', 'POST'])
 def newItem(category_name):
     if 'username' not in login_session:
         return redirect('/login')
@@ -224,7 +225,7 @@ def newItem(category_name):
     else:
         return render_template('newitem.html', category = category)
 
-@app.route('/category/<string:category_name>/<int:item_id>/Edit', methods = ['GET', 'POST'])
+@app.route('/categories/<string:category_name>/<int:item_id>/Edit', methods = ['GET', 'POST'])
 def editItem(category_name, item_id):
     if 'username' not in login_session:
         return redirect('/login')
@@ -243,7 +244,7 @@ def editItem(category_name, item_id):
     else:
         return render_template('edititem.html', category = category, item_id = item_id, item = editeditem)
 
-@app.route('/category/<string:category_name>/<int:item_id>/Delete', methods = ['GET', 'POST'])
+@app.route('/categories/<string:category_name>/<int:item_id>/Delete', methods = ['GET', 'POST'])
 def deleteItem(category_name, item_id):
     if 'username' not in login_session:
         return redirect('/login')
@@ -257,14 +258,14 @@ def deleteItem(category_name, item_id):
     else:
         return render_template('deleteitem.html', category_name = category_name, item_id = item_id, item = itemtodelete)
 
-@app.route('/category/<string:category_name>/JSON')
-def categoryitemJSON(category_id):
+@app.route('/categories/<string:category_name>/JSON')
+def categoryitemJSON(category_name):
     category = session.query(Category).filter_by(name = category_name).one()
-    items = session.query(Item).filter_by(item_id = category_id).all()
+    items = session.query(Item).filter_by(item_id = category.id).all()
     return jsonify(categoryitems=[i.serialize for i in items])
 
 #Need to fix, taking default category as 1
-@app.route('/category/<string:category_name>/<int:item_id>/JSON')
+@app.route('/categories/<string:category_name>/<int:item_id>/JSON')
 def itemJSON(category_name, item_id):
     category = session.query(Category).filter_by(name = category_name)
     item = session.query(Item).filter_by(id=item_id).one()
