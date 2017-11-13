@@ -195,7 +195,6 @@ def useritems(category_name):
     category = session.query(Category).filter_by(name = category_name).one()
     admin_email = "rahul.intley@gmail.com"
     admin_id = getUserId(admin_email)
-    print(admin_id)
     a_items = session.query(Item).filter_by(item_id = category.id, user_id = admin_id).all()
     if 'username' not in login_session:
         return render_template('public_items.html', category = category, items = a_items)
@@ -261,15 +260,29 @@ def deleteItem(category_name, item_id):
 @app.route('/categories/<string:category_name>/JSON')
 def categoryitemJSON(category_name):
     category = session.query(Category).filter_by(name = category_name).one()
-    items = session.query(Item).filter_by(item_id = category.id).all()
-    return jsonify(categoryitems=[i.serialize for i in items])
+    admin_email = "rahul.intley@gmail.com"
+    admin_id = getUserId(admin_email)
+    a_items = session.query(Item).filter_by(item_id = category.id, user_id = admin_id).all()
+    if 'username' not in login_session:
+        return jsonify(categoryitems=[i.serialize for i in a_items])
+    else:
+        log_id = getUserId(login_session['email'])
+        items = session.query(Item).filter_by(item_id = category.id, user_id = log_id).all()
+        return jsonify(categoryitems=[i.serialize for i in items])
 
-#Need to fix, taking default category as 1
-@app.route('/categories/<string:category_name>/<int:item_id>/JSON')
-def itemJSON(category_name, item_id):
-    category = session.query(Category).filter_by(name = category_name)
-    item = session.query(Item).filter_by(id=item_id).one()
-    return jsonify(item.serialize)
+
+@app.route('/categories/<int:item_id>/JSON')
+def itemJSON(item_id):
+    admin_email = "rahul.intley@gmail.com"
+    admin_id = getUserId(admin_email)
+    a_item = session.query(Item).filter_by(id = item_id, user_id = admin_id).all()
+    if 'username' not in login_session:
+        return jsonify(item = [i.serialize for i in a_item])
+    else:
+        log_id = getUserId(login_session['email'])
+        item = session.query(Item).filter_by(id = item_id, user_id = log_id).all()
+        return jsonify(item = [i.serialize for i in item])
+
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
