@@ -252,7 +252,7 @@ def editItem(category_name, item_id):
         session.add(editeditem)
         session.commit()
         flash("Item has been edited!")
-        return redirect(url_for('useritems', category_name = category.name))
+        return redirect(url_for('showItem', category_name = category.name, item_name = editeditem.name))
     else:
         return render_template('edititem.html', category = category, item_id = item_id, item = editeditem)
 
@@ -284,16 +284,17 @@ def categoryitemJSON(category_name):
         return jsonify(categoryitems=[i.serialize for i in items])
 
 
-@app.route('/categories/<int:item_id>/JSON')
-def itemJSON(item_id):
+@app.route('/categories/<string:category_name>/<string:item_name>/JSON')
+def itemJSON(category_name, item_name):
+    category = session.query(Category).filter_by(name = category_name).one()
     admin_email = "rahul.intley@gmail.com"
     admin_id = getUserId(admin_email)
-    a_item = session.query(Item).filter_by(id = item_id, user_id = admin_id).all()
+    a_item = session.query(Item).filter_by(item_id = category.id, name = item_name, user_id = admin_id).all()
     if 'username' not in login_session:
         return jsonify(item = [i.serialize for i in a_item])
     else:
         log_id = getUserId(login_session['email'])
-        item = session.query(Item).filter_by(id = item_id, user_id = log_id).all()
+        item = session.query(Item).filter_by(item_id = category.id, name = item_name, user_id = log_id).all()
         return jsonify(item = [i.serialize for i in item])
 
 
