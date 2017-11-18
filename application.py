@@ -197,11 +197,24 @@ def useritems(category_name):
     admin_id = getUserId(admin_email)
     a_items = session.query(Item).filter_by(item_id = category.id, user_id = admin_id).all()
     if 'username' not in login_session:
-        return render_template('public_items.html', category = category, items = a_items)
+        return render_template('publicitems_category.html', category = category, items = a_items)
     else:
         log_id = getUserId(login_session['email'])
         item = session.query(Item).filter_by(item_id = category.id, user_id = log_id).all()
-        return render_template('user_item.html', category = category, items = item)
+        return render_template('useritems_category.html', category = category, items = item)
+
+@app.route('/categories/<string:category_name>/<string:item_name>/', methods = ['GET', 'POST'])
+def showItem(category_name, item_name):
+    category = session.query(Category).filter_by(name = category_name).one()
+    admin_email = "rahul.intley@gmail.com"
+    admin_id = getUserId(admin_email)
+    if 'username' not in login_session:
+        a_item = session.query(Item).filter_by(item_id = category.id, user_id = admin_id, name = item_name).one()
+        return render_template('public_items.html', category = category, item = a_item)
+    else:
+        log_id = getUserId(login_session['email'])
+        item = session.query(Item).filter_by(item_id = category.id, user_id = log_id, name = item_name).one()
+        return render_template('user_item.html', category = category, item = item)
 
 
 @app.route('/categories/<string:category_name>/New/', methods = ['GET', 'POST'])

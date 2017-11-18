@@ -2,7 +2,7 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>{{category.name}} Items | Catalog</title>
+  <title>{{item.name}} | {{category.name}}</title>
   <!--Bootstrap CSS File -->
   <link type="text/css" href="/static/css/bootstrap.min.css" rel="stylesheet">
   <!--Stylesheet CSS File -->
@@ -18,8 +18,7 @@
   </nav>
   <div class="container">
   <h1>{{ category.name }}</h1>
-    <a href="{{url_for('categories')}}"><button type="button" class="btn btn-primary">Back</button></a>
-    <a href="{{url_for('newItem', category_name = category.name)}}"><button type="button" class="btn btn-success">Add Item</button></a>
+    <a href="{{url_for('useritems', category_name = category.name)}}"><button type="button" class="btn btn-primary">Back</button></a>
   </div>
 </header>
 <section>
@@ -37,16 +36,12 @@
 </section>
 <main>
   <div class="container">
+    <p>Item Name: {{ item.name }}</p>
+    <p>Description: {{ item.description }}</p>
+    <p>Price: {{ item.price }}</p>
+    <a href="{{url_for('editItem', category_name = category.name, item_id = item.id)}}"><button type="button" class="btn btn-warning">Edit Item</button></a>
+    <a href="{{url_for('deleteItem', category_name = category.name, item_id = item.id)}}"><button type="button" class="btn btn-danger">Delete Item</button></a>
     <br>
-    {% for i in items %}
-    <br>
-    <p>Item Name: {{ i.name }}</p>
-    <p>Description: {{ i.description }}</p>
-    <p>Price: {{ i.price }}</p>
-    <a href="{{url_for('editItem', category_name = category.name, item_id = i.id)}}"><button type="button" class="btn btn-warning">Edit Item</button></a>
-    <a href="{{url_for('deleteItem', category_name = category.name, item_id = i.id)}}"><button type="button" class="btn btn-danger">Delete Item</button></a>
-    <br>
-    {% endfor %}
   </div>
 </main>
 </body>
