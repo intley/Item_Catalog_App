@@ -133,6 +133,7 @@ def createUser(login_session):
     user = session.query(User).filter_by(email=login_session['email']).one()
     return user.id
 
+
 # Retrieve User's information
 def getUserInfo(user_id):
     user = session.query(User).filter_by(id=user_id).one()
@@ -146,18 +147,21 @@ def getUserId(email):
     except:
         return None
 
+
 @app.route('/gdisconnect')
 def gdisconnect():
     access_token = login_session.get('access_token')
     if access_token is None:
         print 'Access Token is None'
-        response = make_response(json.dumps('Current user not connected.'), 401)
+        response = make_response(json.dumps('Current user not connected.'
+                                            ''), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
     print 'In gdisconnect access token is %s', access_token
     print 'User name is: '
     print login_session['username']
-    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
+    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s'
+    % login_session['access_token']
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
     print 'result is '
@@ -174,7 +178,8 @@ def gdisconnect():
         flash("You are now logged out.")
         return response
     else:
-        response = make_response(json.dumps('Failed to revoke token for given user.', 400))
+        response = make_response(json.dumps('Failed to revoke token for given'
+                                            ' user.', 400))
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -187,68 +192,81 @@ def categories():
         admin_email = "rahul.intley@gmail.com"
         admin_id = getUserId(admin_email)
         a_items = session.query(Item).all()
-        return render_template('pub_category.html', categories = categories, user_id = admin_id, items = a_items)
+        return render_template('pub_category.html', categories=categories,
+                               user_id=admin_id, items=a_items)
     else:
         log_id = getUserId(login_session['email'])
         u_items = session.query(Item).all()
-        return render_template('user_category.html', categories = categories, items = u_items)
+        return render_template('user_category.html', categories=categories,
+                               items=u_items)
 
 
-@app.route('/categories/<string:category_name>/', methods = ['GET', 'POST'])
+@app.route('/categories/<string:category_name>/', methods=['GET', 'POST'])
 def useritems(category_name):
-    category = session.query(Category).filter_by(name = category_name).one()
+    category = session.query(Category).filter_by(name=category_name).one()
     admin_email = "rahul.intley@gmail.com"
     admin_id = getUserId(admin_email)
-    pub_items = session.query(Item).filter_by(item_id = category.id).all()
+    pub_items = session.query(Item).filter_by(item_id=category.id).all()
     if 'username' not in login_session:
-        return render_template('publicitems_category.html', category = category, items = pub_items)
+        return render_template('publicitems_category.html', category=category,
+                               items=pub_items)
     else:
         log_id = getUserId(login_session['email'])
-        item = session.query(Item).filter_by(item_id = category.id, user_id = log_id).all()
-        return render_template('useritems_category.html', category = category, items = item, p_items = pub_items)
+        item = session.query(Item).filter_by(item_id=category.id,
+                                             user_id=log_id).all()
+        return render_template('useritems_category.html', category=category,
+                               items=item, p_items=pub_items)
 
-@app.route('/categories/<string:category_name>/<string:item_name>/', methods = ['GET', 'POST'])
+
+@app.route('/categories/<string:category_name>/<string:item_name>/',
+           methods=['GET', 'POST'])
 def showItem(category_name, item_name):
-    category = session.query(Category).filter_by(name = category_name).one()
+    category = session.query(Category).filter_by(name=category_name).one()
     # admin_email = "rahul.intley@gmail.com"
     # admin_id = getUserId(admin_email)
-    sel_item = session.query(Item).filter_by(item_id = category.id, name = item_name).one()
+    sel_item = session.query(Item).filter_by(item_id=category.id,
+                                             name=item_name).one()
     if 'username' not in login_session:
-        return render_template('public_items.html', category = category, item = sel_item)
+        return render_template('public_items.html', category=category,
+                               item=sel_item)
     else:
         log_id = getUserId(login_session['email'])
-        if sel_item.user_id !=  log_id:
-            return render_template('public_items.html', category = category, item = sel_item)
+        if sel_item.user_id != log_id:
+            return render_template('public_items.html', category=category,
+                                   item=sel_item)
         else:
-            return render_template('user_item.html', category = category, item = sel_item)
+            return render_template('user_item.html', category=category,
+                                   item=sel_item)
 
-@app.route('/categories/<string:category_name>/New/', methods = ['GET', 'POST'])
+@app.route('/categories/<string:category_name>/New/', methods=['GET', 'POST'])
 def newItem(category_name):
     if 'username' not in login_session:
         return redirect('/login')
-    category = session.query(Category).filter_by(name = category_name).one()
+    category = session.query(Category).filter_by(name=category_name).one()
     if request.method == 'POST':
         user_id = getUserId(login_session['email'])
-        newitem = Item(name = request.form['name'],
-                       description = request.form['description'],
-                       price = request.form['price'],
-                       item_id = category.id,
+        newitem = Item(name=request.form['name'],
+                       description=request.form['description'],
+                       price=request.form['price'],
+                       item_id=category.id,
                        date=datetime.datetime.now(),
-                       user_id = user_id)
+                       user_id=user_id)
         session.add(newitem)
         session.commit()
         flash("New Item has been created!")
-        return redirect(url_for('useritems', category_name = category.name))
+        return redirect(url_for('useritems', category_name=category.name))
     else:
-        return render_template('newitem.html', category = category)
+        return render_template('newitem.html', category=category)
 
-@app.route('/categories/<string:category_name>/<int:item_id>/Edit', methods = ['GET', 'POST'])
+@app.route('/categories/<string:category_name>/<int:item_id>/Edit',
+           methods=['GET', 'POST'])
 def editItem(category_name, item_id):
     if 'username' not in login_session:
         return redirect('/login')
-    category = session.query(Category).filter_by(name = category_name).one()
+    category = session.query(Category).filter_by(name=category_name).one()
     user_id = getUserId(login_session['email'])
-    editeditem = session.query(Item).filter_by(id=item_id, user_id = user_id).one()
+    editeditem = session.query(Item).filter_by(id=item_id,
+                                               user_id=user_id).one()
     if request.method == 'POST':
         editeditem.name = request.form['name']
         editeditem.description = request.form['description']
@@ -257,50 +275,61 @@ def editItem(category_name, item_id):
         session.add(editeditem)
         session.commit()
         flash("Item has been edited!")
-        return redirect(url_for('showItem', category_name = category.name, item_name = editeditem.name))
+        return redirect(url_for('showItem', category_name=category.name,
+                                item_name=editeditem.name))
     else:
-        return render_template('edititem.html', category = category, item_id = item_id, item = editeditem)
+        return render_template('edititem.html', category=category,
+                               item_id=item_id, item=editeditem)
 
-@app.route('/categories/<string:category_name>/<int:item_id>/Delete', methods = ['GET', 'POST'])
+@app.route('/categories/<string:category_name>/<int:item_id>/Delete',
+           methods=['GET', 'POST'])
 def deleteItem(category_name, item_id):
     if 'username' not in login_session:
         return redirect('/login')
     user_id = getUserId(login_session['email'])
-    itemtodelete = session.query(Item).filter_by(id=item_id, user_id = user_id).one()
+    itemtodelete = session.query(Item).filter_by(id=item_id,
+                                                 user_id=user_id).one()
     if request.method == 'POST':
         session.delete(itemtodelete)
         session.commit()
         flash("Item has been deleted!")
-        return redirect(url_for('useritems', category_name = category_name))
+        return redirect(url_for('useritems', category_name=category_name))
     else:
-        return render_template('deleteitem.html', category_name = category_name, item_id = item_id, item = itemtodelete)
+        return render_template('deleteitem.html', category_name=category_name,
+                               item_id=item_id, item=itemtodelete)
 
 @app.route('/categories/<string:category_name>/JSON')
 def categoryitemJSON(category_name):
-    category = session.query(Category).filter_by(name = category_name).one()
+    category = session.query(Category).filter_by(name=category_name).one()
     admin_email = "rahul.intley@gmail.com"
     admin_id = getUserId(admin_email)
-    a_items = session.query(Item).filter_by(item_id = category.id, user_id = admin_id).all()
+    a_items = session.query(Item).filter_by(item_id=category.id,
+                                            user_id=admin_id).all()
     if 'username' not in login_session:
         return jsonify(categoryitems=[i.serialize for i in a_items])
     else:
         log_id = getUserId(login_session['email'])
-        items = session.query(Item).filter_by(item_id = category.id, user_id = log_id).all()
+        items = session.query(Item).filter_by(item_id=category.id,
+                                              user_id=log_id).all()
         return jsonify(categoryitems=[i.serialize for i in items])
 
 
 @app.route('/categories/<string:category_name>/<string:item_name>/JSON')
 def itemJSON(category_name, item_name):
-    category = session.query(Category).filter_by(name = category_name).one()
+    category = session.query(Category).filter_by(name=category_name).one()
     admin_email = "rahul.intley@gmail.com"
     admin_id = getUserId(admin_email)
-    a_item = session.query(Item).filter_by(item_id = category.id, name = item_name, user_id = admin_id).all()
+    a_item = session.query(Item).filter_by(item_id=category.id,
+                                           name=item_name,
+                                           user_id=admin_id).all()
     if 'username' not in login_session:
-        return jsonify(item = [i.serialize for i in a_item])
+        return jsonify(item=[i.serialize for i in a_item])
     else:
         log_id = getUserId(login_session['email'])
-        item = session.query(Item).filter_by(item_id = category.id, name = item_name, user_id = log_id).all()
-        return jsonify(item = [i.serialize for i in item])
+        item = session.query(Item).filter_by(item_id=category.id,
+                                             name=item_name,
+                                             user_id=log_id).all()
+        return jsonify(item=[i.serialize for i in item])
 
 
 @app.route('/api')
@@ -314,4 +343,4 @@ def apiaccess():
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
     app.debug = True
-    app.run(host = '0.0.0.0', port = 5000)
+    app.run(host='0.0.0.0', port=5000)

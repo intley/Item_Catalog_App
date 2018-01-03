@@ -21,7 +21,8 @@ This project is a part of the Full Stack Nanodegree program at Udacity.
 #### Launching Vagrant:
 1. To launch vagrant, navigate to the fullstack-nanodegree-vm folder and inside this folder, VagrantFile.
 2. Once you are in the VagrantFile directory, you can start the virtual machine using the command:
-```vagrant up
+```
+vagrant up
 ```
 3. Proceed to launch the VM using the following command:
 ```
