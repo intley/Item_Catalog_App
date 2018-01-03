@@ -1,20 +1,19 @@
 # Import modules
-from flask import Flask, render_template, request, url_for, redirect, flash, jsonify
-
-from sqlalchemy import create_engine, desc, DateTime
-from sqlalchemy.orm import sessionmaker
-from database_setup import Base, User, Category, Item
-
-from flask import session as login_session
-import random, string
+import random
+import string
 import datetime
-
-from oauth2client.client import flow_from_clientsecrets
-from oauth2client.client import FlowExchangeError
+import requests
 import httplib2
 import json
-from flask import make_response
-import requests
+
+from flask import Flask, render_template, request, url_for, redirect, flash
+from sqlalchemy import create_engine, desc, DateTime, or_
+from sqlalchemy.orm import sessionmaker
+from database_setup import Base, User, Category, Item
+from flask import session as login_session
+from oauth2client.client import flow_from_clientsecrets
+from oauth2client.client import FlowExchangeError
+from flask import make_response, jsonify
 
 app = Flask(__name__)
 
@@ -25,17 +24,18 @@ APPLICATION_NAME = "Catalog Application"
 engine = create_engine('sqlite:///itemcatalog.db')
 Base.metadata.bind = engine
 
-DBSession = sessionmaker(bind = engine)
+DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-#Create anti-forgery state token
+# Create anti-forgery state token
 @app.route('/login')
 def showLogin():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in xrange(32))
     login_session['state'] = state
-    return render_template('login.html', STATE = state)
+    return render_template('login.html', STATE=state)
 
+# Google Connect Signin
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
     if request.args.get('state') != login_session['state']:
@@ -83,8 +83,8 @@ def gconnect():
     stored_access_token = login_session.get('access_token')
     stored_gplus_id = login_session.get('gplus_id')
     if stored_access_token is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('Current user is already connected.'),
-                                 200)
+        response = make_response(json.dumps('Current user is already connec'
+                                            'ted.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -107,19 +107,24 @@ def gconnect():
         user_id = createUser(login_session)
         login_session['user_id'] = user_id
 
-    output = ''
-    output += '<h1>Welcome, '
-    output += login_session['username']
-    output += '!</h1>'
-    output += '<img src="'
-    output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
-    flash("you are now logged in as %s" % login_session['username'])
-    print "done!"
-    print login_session['picture']
+    output = '''
+        <h1>Welcome, %s!</h1>
+        <img src="%s"
+             style = "width: 300px; height: 300px;
+                      border-radius: 150px; -webkit-border-radius: 150px;
+                      -moz-border-radius: 150px;"
+             alt="Profile Picture">
+    ''' % (login_session['username'], login_session['picture'])
+    flash(
+        "You are now logged in as %s." % login_session['username'],
+        'success'
+    )
+    # print "done!"
+    # print login_session['picture']
     return output
 
 
+# Creating a new user on sign in
 def createUser(login_session):
     newUser = User(name=login_session['username'], email=login_session[
                    'email'], picture=login_session['picture'])
@@ -128,7 +133,7 @@ def createUser(login_session):
     user = session.query(User).filter_by(email=login_session['email']).one()
     return user.id
 
-
+# Retrieve User's information
 def getUserInfo(user_id):
     user = session.query(User).filter_by(id=user_id).one()
     return user
@@ -140,7 +145,6 @@ def getUserId(email):
         return user.id
     except:
         return None
-
 
 @app.route('/gdisconnect')
 def gdisconnect():
@@ -182,11 +186,11 @@ def categories():
     if 'username' not in login_session:
         admin_email = "rahul.intley@gmail.com"
         admin_id = getUserId(admin_email)
-        a_items = session.query(Item).filter_by(user_id = admin_id).all()
+        a_items = session.query(Item).all()
         return render_template('pub_category.html', categories = categories, user_id = admin_id, items = a_items)
     else:
         log_id = getUserId(login_session['email'])
-        u_items = session.query(Item).filter_by(user_id = log_id)
+        u_items = session.query(Item).all()
         return render_template('user_category.html', categories = categories, items = u_items)
 
 
@@ -195,27 +199,28 @@ def useritems(category_name):
     category = session.query(Category).filter_by(name = category_name).one()
     admin_email = "rahul.intley@gmail.com"
     admin_id = getUserId(admin_email)
-    a_items = session.query(Item).filter_by(item_id = category.id, user_id = admin_id).all()
+    pub_items = session.query(Item).filter_by(item_id = category.id).all()
     if 'username' not in login_session:
-        return render_template('publicitems_category.html', category = category, items = a_items)
+        return render_template('publicitems_category.html', category = category, items = pub_items)
     else:
         log_id = getUserId(login_session['email'])
         item = session.query(Item).filter_by(item_id = category.id, user_id = log_id).all()
-        return render_template('useritems_category.html', category = category, items = item)
+        return render_template('useritems_category.html', category = category, items = item, p_items = pub_items)
 
 @app.route('/categories/<string:category_name>/<string:item_name>/', methods = ['GET', 'POST'])
 def showItem(category_name, item_name):
     category = session.query(Category).filter_by(name = category_name).one()
-    admin_email = "rahul.intley@gmail.com"
-    admin_id = getUserId(admin_email)
+    # admin_email = "rahul.intley@gmail.com"
+    # admin_id = getUserId(admin_email)
+    sel_item = session.query(Item).filter_by(item_id = category.id, name = item_name).one()
     if 'username' not in login_session:
-        a_item = session.query(Item).filter_by(item_id = category.id, user_id = admin_id, name = item_name).one()
-        return render_template('public_items.html', category = category, item = a_item)
+        return render_template('public_items.html', category = category, item = sel_item)
     else:
         log_id = getUserId(login_session['email'])
-        item = session.query(Item).filter_by(item_id = category.id, user_id = log_id, name = item_name).one()
-        return render_template('user_item.html', category = category, item = item)
-
+        if sel_item.user_id !=  log_id:
+            return render_template('public_items.html', category = category, item = sel_item)
+        else:
+            return render_template('user_item.html', category = category, item = sel_item)
 
 @app.route('/categories/<string:category_name>/New/', methods = ['GET', 'POST'])
 def newItem(category_name):
@@ -296,6 +301,14 @@ def itemJSON(category_name, item_name):
         log_id = getUserId(login_session['email'])
         item = session.query(Item).filter_by(item_id = category.id, name = item_name, user_id = log_id).all()
         return jsonify(item = [i.serialize for i in item])
+
+
+@app.route('/api')
+def apiaccess():
+    if 'username' not in login_session:
+        return redirect('/login')
+    else:
+        return render_template('accessjson.html')
 
 
 if __name__ == '__main__':

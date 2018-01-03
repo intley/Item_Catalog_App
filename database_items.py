@@ -45,25 +45,25 @@ category5 = Category(name = "Video Games")
 session.add(category5)
 session.commit()
 
-category6 = Category(name = "Consoles")
-session.add(category6)
-session.commit()
+# category6 = Category(name = "Consoles")
+# session.add(category6)
+# session.commit()
 
-category7 = Category(name = "Sports")
-session.add(category7)
-session.commit()
+# category7 = Category(name = "Sports")
+# session.add(category7)
+# session.commit()
 
-category8 = Category(name = "Music")
-session.add(category8)
-session.commit()
+# category8 = Category(name = "Music")
+# session.add(category8)
+# session.commit()
 
-category9 = Category(name = "Television Sets")
-session.add(category9)
-session.commit()
+# category9 = Category(name = "Television Sets")
+# session.add(category9)
+# session.commit()
 
-category10 = Category(name = "Desktops")
-session.add(category10)
-session.commit()
+# category10 = Category(name = "Desktops")
+# session.add(category10)
+# session.commit()
 
 item1 = Item(name = "Da Vinci Code",
              date = datetime.datetime.now(),

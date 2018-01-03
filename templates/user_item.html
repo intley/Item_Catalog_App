@@ -12,9 +12,16 @@
 <header>
   <nav class="navbar bg-light">
     <div class="container">
-      <a class="navbar-brand text-dark">Category App</a>
-      <a href="{{url_for('gdisconnect')}}" class="text-right text-dark">Logout</a>
-    </div>
+      <a class="navbar-brand">Category App</a>
+      <ul class="nav justify-content-end">
+        <li class="nav-item">
+          <a class="nav-link" href="{{url_for('apiaccess')}}">API</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{url_for('gdisconnect')}}">Logout</a>
+        </li>
+      </ul>
+  </div>
   </nav>
   <div class="container">
   <h1>{{ category.name }}</h1>
@@ -36,13 +43,17 @@
 </section>
 <main>
   <div class="container">
-    <p>Item Name: {{ item.name }}</p>
-    <p>Description: {{ item.description }}</p>
-    <p>Price: {{ item.price }}</p>
-    <a href="{{url_for('editItem', category_name = category.name, item_id = item.id)}}"><button type="button" class="btn btn-warning">Edit Item</button></a>
-    <a href="{{url_for('deleteItem', category_name = category.name, item_id = item.id)}}"><button type="button" class="btn btn-danger">Delete Item</button></a>
-    <br>
+  <br>
+  <div class="card border-dark mb-3" style="width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title">{{ item.name }}</h5>
+    <h6 class="card-subtitle mb-2 text-muted">{{ item.price }}</h6>
+    <p class="card-text">{{ item.description }}</p>
+    <a href="{{url_for('editItem', category_name = category.name, item_id = item.id)}}" class="card-link">Edit</a>
+    <a href="{{url_for('deleteItem', category_name = category.name, item_id = item.id)}}" class="card-link">Delete</a>
   </div>
+</div>
+</div>
 </main>
 </body>
 </html>

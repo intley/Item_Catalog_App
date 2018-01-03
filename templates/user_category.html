@@ -13,8 +13,15 @@
   <header>
     <nav class="navbar bg-light">
       <div class="container">
-      <a class="navbar-brand text-dark">Category App</a>
-      <a href="{{url_for('gdisconnect')}}" class="text-right text-dark link">Logout</a>
+        <a class="navbar-brand">Category App</a>
+        <ul class="nav justify-content-end">
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('apiaccess')}}">API</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('gdisconnect')}}">Logout</a>
+          </li>
+        </ul>
     </div>
     </nav>
   </header>
@@ -41,6 +48,7 @@
           <a href="{{url_for('useritems', category_name = c.name)}}"><h6>{{c.name}}</h6></a>
           {% endfor %}
         </div>
+        <br>
         <div class="col-md-6">
           <h1>Latest Items: </h1>
           {% for i in items %}

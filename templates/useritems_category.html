@@ -12,9 +12,16 @@
   <header>
     <nav class="navbar bg-light">
       <div class="container">
-        <a class="navbar-brand text-dark">Category App</a>
-        <a href="{{url_for('gdisconnect')}}" class="text-right text-dark">Logout</a>
-      </div>
+        <a class="navbar-brand">Category App</a>
+        <ul class="nav justify-content-end">
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('apiaccess')}}">API</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('gdisconnect')}}">Logout</a>
+          </li>
+        </ul>
+    </div>
     </nav>
     <div class="container">
       <a href="{{url_for('categories')}}"><button type="button" class="btn btn-primary">Back</button></a>
@@ -38,6 +45,10 @@
   <main>
     <div class="container">
       {% for i in items %}
+      <a href = "{{url_for('showItem', category_name = category.name, item_name = i.name)}}">{{ i.name }}</a>
+      <br>
+      {% endfor %}
+      {% for i in p_items %}
       <a href = "{{url_for('showItem', category_name = category.name, item_name = i.name)}}">{{ i.name }}</a>
       <br>
       {% endfor %}

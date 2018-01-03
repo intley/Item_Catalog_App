@@ -13,9 +13,16 @@
   <header>
     <nav class="navbar bg-light">
       <div class="container">
-        <a class="navbar-brand text-dark">Category App</a>
-        <a href="{{url_for('showLogin')}}" class="text-right text-dark link">Login</a>
-      </div>
+        <a class="navbar-brand">Category App</a>
+        <ul class="nav justify-content-end">
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('apiaccess')}}">API</a>
+          </li>
+          <li class="nav-item">
+            <a href="{{url_for('showLogin')}}" class="nav-link">Login</a>
+          </li>
+        </ul>
+    </div>
     </nav>
   </header>
 <section>
