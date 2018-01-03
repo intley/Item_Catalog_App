@@ -117,7 +117,7 @@ def gconnect():
     ''' % (login_session['username'], login_session['picture'])
     flash(
         "You are now logged in as %s." % login_session['username'],
-        'success'
+        'Success'
     )
     # print "done!"
     # print login_session['picture']
@@ -160,8 +160,7 @@ def gdisconnect():
     print 'In gdisconnect access token is %s', access_token
     print 'User name is: '
     print login_session['username']
-    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s'
-    % login_session['access_token']
+    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
     print 'result is '
@@ -179,7 +178,10 @@ def gdisconnect():
         return response
     else:
         response = make_response(json.dumps('Failed to revoke token for given'
-                                            ' user.', 400))
+                                            ' user. You must be logged out of '
+                                            'accounts before you try signing'
+                                            'in to Google Sign in on Item'
+                                            'Catalog', 400))
         response.headers['Content-Type'] = 'application/json'
         return response
 

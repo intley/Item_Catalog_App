@@ -33,6 +33,16 @@ And now change directory to the vagrant folder:
 cd /vagrant
 ```
 
+#### Setting up Item Catalog:
+1. First, setup the database by running the following command:
+```
+python database_setup.py
+```
+2. Populate the Catalog Items by using the following command:
+```
+python database_items.py
+```
+
 #### Launching Application:
 1. To launch the application, once you are in the vagrant directory, make sure you have cloned this Git repository.
 2. Proceed to launch the application using the following command:
